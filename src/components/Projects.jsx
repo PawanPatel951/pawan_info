@@ -23,18 +23,6 @@ import vraj_dash2 from "../assets/second_dashboard.png";
 import vraj_dash3 from "../assets/third_dashboard.png";
 
 // =====================================================
-// TEMPORARY DUMMY IMAGES
-// =====================================================
-
-const vrajStore1 = vraj1;
-const vrajStore2 = vraj2;
-const vrajStore3 = vraj3;
-
-const vrajDashboard1 = vraj_dash1;
-const vrajDashboard2 = vraj_dash2;
-const vrajDashboard3 = vraj_dash3;
-
-// =====================================================
 // NETGRAM TRAVELS IMAGES
 // =====================================================
 
@@ -62,17 +50,14 @@ import ecommerce3 from "../assets/netgram-3.png";
 // GITHUB
 // =====================================================
 
-const GITHUB_PROFILE = "https://github.com/pawanpatel951";
+const GITHUB_PROFILE =
+  "https://github.com/pawanpatel951";
 
 // =====================================================
 // PROJECT DATA
 // =====================================================
 
 const projects = [
-  // ===================================================
-  // 01 - VRAJ CREATION
-  // ===================================================
-
   {
     id: "vraj-creation",
 
@@ -82,7 +67,6 @@ const projects = [
 
     description:
       "A complete handicraft e-commerce website with product browsing, cart, checkout, coupons, Spin & Win, COD, UPI payments and order confirmation.",
-
 
     tech: [
       "React",
@@ -101,16 +85,12 @@ const projects = [
       vraj3,
     ],
 
-    live: "https://vraj-creation-website.netlify.app/",
+    live:
+      "https://vraj-creation-website.netlify.app/",
 
     dashboard:
       "https://vraj-creation-website.netlify.app/admin/login",
   },
-
-
-  // ===================================================
-  // 03 - VRAJ CREATION ADMIN DASHBOARD
-  // ===================================================
 
   {
     id: "vraj-creation-dashboard",
@@ -133,17 +113,14 @@ const projects = [
     ],
 
     images: [
-      vrajDashboard1,
-      vrajDashboard2,
-      vrajDashboard3,
+      vraj_dash1,
+      vraj_dash2,
+      vraj_dash3,
     ],
 
-    live: "https://vrajstore.netlify.app/login",
+    live:
+      "https://vrajstore.netlify.app/login",
   },
-
-  // ===================================================
-  // 04 - VILLA WEBSITE
-  // ===================================================
 
   {
     id: "villa-website",
@@ -167,12 +144,9 @@ const projects = [
       villa3,
     ],
 
-    live: "https://villa-websites.netlify.app/",
+    live:
+      "https://villa-websites.netlify.app/",
   },
-
-  // ===================================================
-  // 05 - NETGRAM TRAVELS
-  // ===================================================
 
   {
     id: "netgram-travels",
@@ -196,12 +170,9 @@ const projects = [
       netgramTravels3,
     ],
 
-    live: "https://netgram-travels.netlify.app/",
+    live:
+      "https://netgram-travels.netlify.app/",
   },
-
-  // ===================================================
-  // 06 - E-COMMERCE WEBSITE
-  // ===================================================
 
   {
     id: "ecommerce-website",
@@ -225,34 +196,96 @@ const projects = [
       ecommerce3,
     ],
 
-    live: "https://e-commerce-web-sites.netlify.app/",
+    live:
+      "https://e-commerce-web-sites.netlify.app/",
   },
 ];
+
+// =====================================================
+// FAST IMAGE PRELOAD
+// =====================================================
+
+const preloadImage = (src) => {
+  if (!src) return;
+
+  const image = new Image();
+
+  image.decoding = "async";
+  image.src = src;
+};
 
 // =====================================================
 // PROJECT IMAGE SLIDER
 // =====================================================
 
-const ProjectImageSlider = ({ project }) => {
-  const [currentImage, setCurrentImage] = useState(0);
+const ProjectImageSlider = ({
+  project,
+  projectIndex,
+}) => {
+  const [currentImage, setCurrentImage] =
+    useState(0);
 
-  const totalImages = project.images.length;
+  const totalImages =
+    project.images.length;
+
+  // ===================================================
+  // PRELOAD FIRST + SECOND IMAGE
+  // ===================================================
+
+  useEffect(() => {
+    if (!project.images?.length) return;
+
+    // Current image
+    preloadImage(project.images[0]);
+
+    // Next image
+    if (project.images[1]) {
+      preloadImage(project.images[1]);
+    }
+  }, [project.images]);
+
+  // ===================================================
+  // PRELOAD NEXT IMAGE
+  // ===================================================
+
+  useEffect(() => {
+    if (totalImages <= 1) return;
+
+    const nextIndex =
+      (currentImage + 1) %
+      totalImages;
+
+    const previousIndex =
+      (currentImage - 1 + totalImages) %
+      totalImages;
+
+    preloadImage(
+      project.images[nextIndex]
+    );
+
+    preloadImage(
+      project.images[previousIndex]
+    );
+  }, [
+    currentImage,
+    totalImages,
+    project.images,
+  ]);
 
   // ===================================================
   // AUTO SLIDER
   // ===================================================
 
   useEffect(() => {
-    if (totalImages <= 1) {
-      return;
-    }
+    if (totalImages <= 1) return;
 
     const interval = setInterval(() => {
       setCurrentImage(
         (previous) =>
-          (previous + 1) % totalImages
+          (previous + 1) %
+          totalImages
       );
-    }, 3500);
+    }, 4500);
 
     return () => {
       clearInterval(interval);
@@ -260,18 +293,19 @@ const ProjectImageSlider = ({ project }) => {
   }, [totalImages]);
 
   // ===================================================
-  // NEXT IMAGE
+  // NEXT
   // ===================================================
 
   const nextImage = () => {
     setCurrentImage(
       (previous) =>
-        (previous + 1) % totalImages
+        (previous + 1) %
+        totalImages
     );
   };
 
   // ===================================================
-  // PREVIOUS IMAGE
+  // PREVIOUS
   // ===================================================
 
   const previousImage = () => {
@@ -282,6 +316,20 @@ const ProjectImageSlider = ({ project }) => {
     );
   };
 
+  // ===================================================
+  // EMPTY IMAGE SAFETY
+  // ===================================================
+
+  if (!project.images?.length) {
+    return (
+      <div className="flex aspect-[16/10] items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <span className="text-sm text-gray-500">
+          No image available
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="relative aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-gray-800">
 
@@ -289,50 +337,66 @@ const ProjectImageSlider = ({ project }) => {
           IMAGE
       ================================================= */}
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+      >
         <motion.img
           key={`${project.id}-${currentImage}`}
-          src={project.images[currentImage]}
+          src={
+            project.images[currentImage]
+          }
           alt={`${project.title} screenshot ${
             currentImage + 1
           }`}
           initial={{
             opacity: 0,
-            scale: 1.05,
           }}
           animate={{
             opacity: 1,
-            scale: 1,
           }}
           exit={{
             opacity: 0,
-            scale: 0.98,
           }}
           transition={{
-            duration: 0.45,
+            duration: 0.25,
           }}
           className="absolute inset-0 h-full w-full object-cover object-top"
-          loading="lazy"
+          loading={
+            projectIndex < 2 &&
+            currentImage === 0
+              ? "eager"
+              : "lazy"
+          }
+          decoding="async"
+          fetchPriority={
+            projectIndex === 0 &&
+            currentImage === 0
+              ? "high"
+              : "auto"
+          }
         />
       </AnimatePresence>
 
       {/* =================================================
-          DARK GRADIENT
+          GRADIENT
       ================================================= */}
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
       {/* =================================================
-          CATEGORY BADGE
+          CATEGORY
       ================================================= */}
 
       <div className="absolute left-4 top-4 z-10">
         <span className="inline-flex max-w-[85%] items-center gap-2 rounded-full border border-white/20 bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
+
           <FiLayout className="shrink-0" />
 
           <span className="truncate">
             {project.category}
           </span>
+
         </span>
       </div>
 
@@ -343,15 +407,17 @@ const ProjectImageSlider = ({ project }) => {
       {totalImages > 1 && (
         <div className="absolute right-4 top-4 z-10">
           <span className="flex h-9 min-w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 px-2 text-xs font-bold text-white backdrop-blur-md">
-            {String(currentImage + 1).padStart(
-              2,
-              "0"
-            )}
+
+            {String(
+              currentImage + 1
+            ).padStart(2, "0")}
+
             /
-            {String(totalImages).padStart(
-              2,
-              "0"
-            )}
+
+            {String(
+              totalImages
+            ).padStart(2, "0")}
+
           </span>
         </div>
       )}
@@ -365,7 +431,7 @@ const ProjectImageSlider = ({ project }) => {
           type="button"
           onClick={previousImage}
           aria-label={`Previous ${project.title} image`}
-          className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-blue-600"
+          className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition hover:scale-110 hover:bg-blue-600"
         >
           <FiChevronLeft className="text-lg" />
         </button>
@@ -380,7 +446,7 @@ const ProjectImageSlider = ({ project }) => {
           type="button"
           onClick={nextImage}
           aria-label={`Next ${project.title} image`}
-          className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-blue-600"
+          className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition hover:scale-110 hover:bg-blue-600"
         >
           <FiChevronRight className="text-lg" />
         </button>
@@ -397,11 +463,12 @@ const ProjectImageSlider = ({ project }) => {
       </div>
 
       {/* =================================================
-          SLIDER DOTS
+          DOTS
       ================================================= */}
 
       {totalImages > 1 && (
         <div className="absolute bottom-5 right-4 z-20 flex items-center gap-1.5">
+
           {project.images.map(
             (_, index) => (
               <button
@@ -421,6 +488,7 @@ const ProjectImageSlider = ({ project }) => {
               />
             )
           )}
+
         </div>
       )}
     </div>
@@ -439,7 +507,7 @@ const ProjectCard = ({
     <motion.article
       initial={{
         opacity: 0,
-        y: 50,
+        y: 30,
       }}
       whileInView={{
         opacity: 1,
@@ -447,24 +515,25 @@ const ProjectCard = ({
       }}
       viewport={{
         once: true,
-        amount: 0.1,
+        amount: 0.05,
       }}
       transition={{
-        duration: 0.55,
-        delay: (index % 3) * 0.1,
+        duration: 0.45,
+        delay: (index % 3) * 0.08,
       }}
       whileHover={{
-        y: -8,
+        y: -6,
       }}
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-gray-200/40 transition-all duration-500 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/20"
+      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-gray-200/40 transition-all duration-300 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/20"
     >
 
       {/* =================================================
-          IMAGE SLIDER
+          IMAGE
       ================================================= */}
 
       <ProjectImageSlider
         project={project}
+        projectIndex={index}
       />
 
       {/* =================================================
@@ -473,17 +542,13 @@ const ProjectCard = ({
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
 
-        {/* =================================================
-            DESCRIPTION
-        ================================================= */}
+        {/* DESCRIPTION */}
 
         <p className="min-h-[84px] text-sm leading-6 text-gray-600 dark:text-gray-400">
           {project.description}
         </p>
 
-        {/* =================================================
-            TECHNOLOGIES
-        ================================================= */}
+        {/* TECHNOLOGIES */}
 
         <div className="mt-5 flex flex-wrap gap-2">
           {project.tech.map(
@@ -498,15 +563,11 @@ const ProjectCard = ({
           )}
         </div>
 
-        {/* =================================================
-            BUTTONS
-        ================================================= */}
+        {/* BUTTONS */}
 
         <div className="mt-auto flex flex-wrap gap-2 pt-6">
 
-          {/* =================================================
-              LIVE WEBSITE
-          ================================================= */}
+          {/* LIVE */}
 
           <a
             href={project.live}
@@ -523,9 +584,7 @@ const ProjectCard = ({
             <FiArrowUpRight className="shrink-0" />
           </a>
 
-          {/* =================================================
-              DASHBOARD
-          ================================================= */}
+          {/* DASHBOARD */}
 
           {project.dashboard && (
             <a
@@ -543,6 +602,7 @@ const ProjectCard = ({
               <FiArrowUpRight className="shrink-0" />
             </a>
           )}
+
         </div>
       </div>
     </motion.article>
@@ -561,7 +621,7 @@ const Projects = () => {
     >
 
       {/* =================================================
-          BACKGROUND DECORATION
+          BACKGROUND
       ================================================= */}
 
       <div className="pointer-events-none absolute left-0 top-20 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
@@ -581,7 +641,7 @@ const Projects = () => {
         <motion.div
           initial={{
             opacity: 0,
-            y: 30,
+            y: 25,
           }}
           whileInView={{
             opacity: 1,
@@ -591,7 +651,7 @@ const Projects = () => {
             once: true,
           }}
           transition={{
-            duration: 0.6,
+            duration: 0.5,
           }}
           className="mx-auto mb-14 max-w-3xl text-center"
         >
@@ -610,13 +670,11 @@ const Projects = () => {
           <p className="mt-5 text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
             A collection of websites and applications I have designed and developed using modern web technologies.
           </p>
+
         </motion.div>
 
         {/* =================================================
             PROJECT GRID
-            Desktop  = 3 columns
-            Tablet   = 2 columns
-            Mobile   = 1 column
         ================================================= */}
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -638,7 +696,7 @@ const Projects = () => {
         <motion.div
           initial={{
             opacity: 0,
-            y: 30,
+            y: 25,
           }}
           whileInView={{
             opacity: 1,
@@ -648,7 +706,7 @@ const Projects = () => {
             once: true,
           }}
           transition={{
-            duration: 0.6,
+            duration: 0.5,
           }}
           className="mt-14 flex flex-col items-center text-center"
         >
@@ -663,6 +721,7 @@ const Projects = () => {
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-3 rounded-2xl bg-gray-900 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-gray-900/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-600 hover:shadow-blue-500/25 dark:bg-white dark:text-gray-900 dark:hover:bg-blue-500 dark:hover:text-white"
           >
+
             <FiGithub className="text-xl" />
 
             <span>
@@ -670,12 +729,14 @@ const Projects = () => {
             </span>
 
             <FiArrowUpRight className="text-lg transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+
           </a>
+
         </motion.div>
+
       </div>
     </section>
   );
 };
 
 export default Projects;
-
