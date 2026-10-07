@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* Tailwind dark mode = .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #ffffff;
+  color: #111827;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+html.dark body {
+  background: #030712;
+  color: #f9fafb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+a {
+  transition: all 0.3s ease;
+}
+
+::selection {
+  background: #2563eb;
+  color: #ffffff;
+}
